@@ -47,10 +47,9 @@ function beautytips_library() {
   $libraries = [];
   $path = drupal_get_path('module', 'beautytips');
   $expath = $path . '/other_libs/excanvas_r3';
-
   $libraries['beautytips-jquery'] = [
     'title' => 'BeautyTips Jquery Plugin',
-    'website' => 'http://plugins.jquery.com/project/bt',
+    'website' => 'https://github.com/pifagor87/beautytips',
     'version' => '0.9.5-rc1',
     'js' => [$path . '/js/jquery.bt.min.js' => []],
   ];
@@ -71,7 +70,6 @@ function beautytips_library() {
       'js' => [$expath . '/excanvas.compiled.js' => []],
     ];
   }
-
   $libraries['beautytips-ltr'] = [
     'title' => 'BeautyTips Module LTR support',
     'website' => 'http://drupal.org/project/beautytips',
@@ -81,7 +79,6 @@ function beautytips_library() {
       ['beautytips', 'beautytips-jquery'],
     ],
   ];
-
   return $libraries;
 }
 
@@ -94,10 +91,8 @@ function beautytips_library() {
 function beautytips_add_beautytips($options = NULL) {
   $settings = ['beautytips' => []];
   $js_added = drupal_add_js($data = NULL, 'setting');
-
   if (count($options)) {
     foreach ($options as $beautytip => $content) {
-
       // Ensure the js settings are not added more than once
       if (isset($js_added['settings']['data']) && is_array($js_added['settings']['data'])) {
         foreach ($js_added['settings']['data'] as $setting) {
@@ -108,11 +103,10 @@ function beautytips_add_beautytips($options = NULL) {
           }
         }
       }
-
       // Setup the settings array for adding js
       if (isset($content) && is_array($content)) {
         $settings['beautytips'][$beautytip] = $content;
-        $settings['beautytips'][$beautytip]['style'] = isset($content['style']) ? $content['style'] : 'default';
+        $settings['beautytips'][$beautytip]['style'] = isset($content['style']) ? $content['style'] : variable_get('beautytips_default_style', 'default');
         $keys_no_add = [
           'cssSelect',
           'style',
@@ -132,7 +126,6 @@ function beautytips_add_beautytips($options = NULL) {
       }
     }
   }
-
   beautytips_add_js();
   if (!empty($settings['beautytips'])) {
     drupal_add_js($settings, 'setting');
@@ -152,11 +145,9 @@ function beautytips_add_js() {
     if (variable_get('beautytips_ltr', FALSE)) {
       drupal_add_library('beautytips', 'beautytips-ltr');
     }
-
     // Add the styles info.
     $styles = beautytips_get_styles();
     drupal_add_js(['beautytipStyles' => $styles], 'setting');
-
     // Mark as added so we don't do it again.
     $added = TRUE;
   }
@@ -207,7 +198,6 @@ function beautytips_define_beautytips_styles() {
       }
     }
   }
-
   $styles['plain'] = [];
   $styles['netflix'] = [
     'positions' => ['right', 'left'],
@@ -295,4 +285,3 @@ function beautytips_define_beautytips_styles() {
   ];
   return $styles;
 }
-
