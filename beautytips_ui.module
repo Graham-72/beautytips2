@@ -9,7 +9,7 @@
  */
 
 function beautytips_ui_admin_settings(&$form) {
-  $items = beautytips_ui_include_invoke('beautytips', 'admin_info', $args = []);
+  $items = beautytips_ui_include_invoke('beautytips', 'admin_info', $args = array());
   if (is_array($items)) {
     foreach ($items as $form_item) {
       if (count($form_item)) {
@@ -30,16 +30,16 @@ function beautytips_ui_admin_settings(&$form) {
 function beautytips_ui_admin_submit($form, $form_state) {
   module_invoke('menu', 'rebuild');
   cache_clear_all('*', 'cache_menu', TRUE);
-  drupal_theme_rebuild();
+  backdrop_theme_rebuild();
 }
 
 /**
  * Implementation of hook_menu.
  */
 function beautytips_ui_menu() {
-  $items = [];
+  $items = array();
 
-  $menu_items = beautytips_ui_include_invoke('beautytips', 'menu_items', $args = []);
+  $menu_items = beautytips_ui_include_invoke('beautytips', 'menu_items', $args = array());
   if (is_array($menu_items)) {
     foreach ($menu_items as $menu_item) {
       if (is_array($menu_item)) {
@@ -101,10 +101,10 @@ function beautytips_ui_include_invoke($module, $hook, $args) {
  *   An array of all loaded includes. (w/o appended .inc)
  */
 function beautytips_ui_include_list() {
-  $files = [
-    'drupal_help.inc' => 'drupal_help',
+  $files = array(
+    'backdrop_help.inc' => 'backdrop_help',
     'textinput.inc' => 'textinput',
-  ];
+  );
   foreach ($files as $file => $name) {
     module_load_include('inc', 'beautytips', 'includes/' . $name);
   }

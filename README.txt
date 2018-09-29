@@ -8,13 +8,13 @@
   of 755 should work for the excanvas_r3 folder (755 means permission settings - rwxr-xr-x)
   On Linux or Mac, you can do this with the command 'sudo chmod -R 755 excanvas_r3'
 
-  Other than that, you just need to turn the module on in the usual Drupal way.
+  Other than that, you just need to turn the module on in the usual Backdrop way.
 
   --------------------------------------------------------------------------------------
                                    ABOUT THE MODULE
     
   The Beautytips module provides ballon-help style tooltip for any page element. 
-  It integrates BeautyTips jQuery plugin by Jeff Robbins with Drupal.  Currently, this 
+  It integrates BeautyTips jQuery plugin by Jeff Robbins with Drupal.  Currently, this
   module allows tooltips to appear with textfields and textareas.  It also supplies hover
   tips for Drupal help links and advanced help links.  Most importantly, it allows developers
   to add their own beautytips popups to their site without having to delve into jQuery.

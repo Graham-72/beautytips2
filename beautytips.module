@@ -9,10 +9,10 @@
  * Implements hook_init().
  */
 function beautytips_init() {
-  if (variable_get('beautytips_always_add', 0)) {
-    $selectors = [];
-    $options = [];
-    $selectors = variable_get('beautytips_added_selectors_array', []);
+  if (config_get('beautytips.settings','beautytips_always_add')) {
+    $selectors = array();
+    $options = array();
+    $selectors = config_get('beautytips.settings','beautytips_added_selectors_array');
     if (count($selectors)) {
       foreach ($selectors as $selector) {
         if (!empty($selector)) {
@@ -29,56 +29,56 @@ function beautytips_init() {
  * Implements hook_menu().
  */
 function beautytips_menu() {
-  $items['admin/config/user-interface/beautytips'] = [
+  $items['admin/config/content/beautytips'] = array(
     'title' => 'BeautyTips',
     'description' => 'Configure settings related to the Beautytips module.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => ['beautytips_admin'],
-    'access arguments' => ['administer site configuration'],
+    'page callback' => 'backdrop_get_form',
+    'page arguments' => array('beautytips_admin'),
+    'access arguments' => array('administer site configuration'),
     'file' => 'beautytips.admin.inc',
-  ];
+  );
   return $items;
 }
 
 /**
- * Implements hook_library().
+ * Implements hook_library_info().
  */
-function beautytips_library() {
-  $libraries = [];
-  $path = drupal_get_path('module', 'beautytips');
+function beautytips_library_info() {
+  $libraries = array();
+  $path = backdrop_get_path('module', 'beautytips');
   $expath = $path . '/other_libs/excanvas_r3';
-  $libraries['beautytips-jquery'] = [
+  $libraries['beautytips-jquery'] = array(
     'title' => 'BeautyTips Jquery Plugin',
     'website' => 'https://github.com/pifagor87/beautytips',
     'version' => '0.9.5-rc1',
-    'js' => [$path . '/js/jquery.bt.min.js' => []],
-  ];
-  $libraries['beautytips-module'] = [
+    'js' => array($path . '/js/jquery.bt.min.js' => array()),
+  );
+  $libraries['beautytips-module'] = array(
     'title' => 'BeautyTips Module',
-    'website' => 'http://drupal.org/project/beautytips',
-    'version' => '7.x-2.x',
-    'js' => [$path . '/js/beautytips.min.js' => []],
-    'dependencies' => [
+    'website' => 'http://github.com/backdrop-contrib/beautytips',
+    'version' => '1.x-2.x',
+    'js' => array($path . '/js/beautytips.js' => array()),
+    'dependencies' => array(
       ['beautytips', 'beautytips-jquery'],
-    ],
-  ];
+    ),
+  );
   if (file_exists($expath . '/excanvas.compiled.js')) {
-    $libraries['excanvas_r3'] = [
+    $libraries['excanvas_r3'] = array(
       'title' => 'ExplorerCanvas',
       'website' => 'http://excanvas.sourceforge.net/',
       'version' => 'r3',
-      'js' => [$expath . '/excanvas.compiled.js' => []],
-    ];
+      'js' => array($expath . '/excanvas.compiled.js' => array()),
+    );
   }
-  $libraries['beautytips-ltr'] = [
+  $libraries['beautytips-ltr'] = array(
     'title' => 'BeautyTips Module LTR support',
-    'website' => 'http://drupal.org/project/beautytips',
-    'version' => '7.x-2.x',
-    'css' => [$path . '/css/beautytips-ltr.css' => []],
-    'dependencies' => [
+    'website' => 'http://github.com/backdrop-contrib/beautytips',
+    'version' => '1.x-2.x',
+    'css' => array($path . '/css/beautytips-ltr.css' => array()),
+    'dependencies' => array(
       ['beautytips', 'beautytips-jquery'],
-    ],
-  ];
+    ),
+  );
   return $libraries;
 }
 
@@ -89,8 +89,8 @@ function beautytips_library() {
  * @param array $options - See README.txt for details
  */
 function beautytips_add_beautytips($options = NULL) {
-  $settings = ['beautytips' => []];
-  $js_added = drupal_add_js($data = NULL, 'setting');
+  $settings = array('beautytips' => array());
+  $js_added = backdrop_add_js($data = NULL, 'setting');
   if (count($options)) {
     foreach ($options as $beautytip => $content) {
       // Ensure the js settings are not added more than once
@@ -106,8 +106,8 @@ function beautytips_add_beautytips($options = NULL) {
       // Setup the settings array for adding js
       if (isset($content) && is_array($content)) {
         $settings['beautytips'][$beautytip] = $content;
-        $settings['beautytips'][$beautytip]['style'] = isset($content['style']) ? $content['style'] : variable_get('beautytips_default_style', 'default');
-        $keys_no_add = [
+        $settings['beautytips'][$beautytip]['style'] = isset($content['style']) ? $content['style'] : config_get('beautytips.settings','beautytips_default_style');
+        $keys_no_add = array(
           'cssSelect',
           'style',
           'list',
@@ -115,7 +115,7 @@ function beautytips_add_beautytips($options = NULL) {
           'preEval',
           'ajaxDisableLink',
           'animate',
-        ];
+        );
         foreach ($settings['beautytips'][$beautytip] as $key => $value) {
           // Ensure that numeric options are not passed as strings.
           $settings['beautytips'][$beautytip][$key] = is_numeric($value) ? (int) $value : $value;
@@ -128,7 +128,7 @@ function beautytips_add_beautytips($options = NULL) {
   }
   beautytips_add_js();
   if (!empty($settings['beautytips'])) {
-    drupal_add_js($settings, 'setting');
+    backdrop_add_js($settings, 'setting');
   }
 }
 
@@ -136,18 +136,18 @@ function beautytips_add_beautytips($options = NULL) {
  * Add the basic beautytips javascript to the page.
  */
 function beautytips_add_js() {
-  $added = &drupal_static(__FUNCTION__, FALSE);
+  $added = &backdrop_static(__FUNCTION__, FALSE);
   if (!$added) {
     // Add beautytips jQuery plugin and module js.
-    drupal_add_library('beautytips', 'beautytips-module');
+    backdrop_add_library('beautytips', 'beautytips-module');
     // Add this for ie compatibility
-    drupal_add_library('beautytips', 'excanvas_r3');
-    if (variable_get('beautytips_ltr', FALSE)) {
-      drupal_add_library('beautytips', 'beautytips-ltr');
+    backdrop_add_library('beautytips', 'excanvas_r3');
+    if (config_get('beautytips.settings','beautytips_ltr')) {
+      backdrop_add_library('beautytips', 'beautytips-ltr');
     }
     // Add the styles info.
     $styles = beautytips_get_styles();
-    drupal_add_js(['beautytipStyles' => $styles], 'setting');
+    backdrop_add_js(['beautytipStyles' => $styles], 'setting');
     // Mark as added so we don't do it again.
     $added = TRUE;
   }
@@ -160,7 +160,7 @@ function beautytips_get_styles($reload = FALSE) {
   $cache = cache_get('beautytips:beautytips-styles');
   if (!$cache || $reload) {
     $styles = module_invoke_all('define_beautytips_styles');
-    drupal_alter('define_beautytips_styles', $styles);
+    backdrop_alter('define_beautytips_styles', $styles);
     // Save the beautytips style registry in the cache.
     cache_set('beautytips:beautytips-styles', $styles);
   }
@@ -175,14 +175,14 @@ function beautytips_get_styles($reload = FALSE) {
  */
 function beautytips_get_style($style = 'default') {
   $styles = beautytips_get_styles();
-  return isset($styles[$style]) ? $styles[$style] : [];
+  return isset($styles[$style]) ? $styles[$style] : array();
 }
 
 /**
  * Implements hook_define_beautytips_styles().
  */
 function beautytips_define_beautytips_styles() {
-  $styles['default'] = variable_get('beautytips_defaults', []);
+  $styles['default'] = config_get('beautytips.settings','beautytips_defaults');
   // Cleanup any problems with defaults.
   if (count($styles['default'])) {
     foreach ($styles['default'] as &$value) {
@@ -198,35 +198,35 @@ function beautytips_define_beautytips_styles() {
       }
     }
   }
-  $styles['plain'] = [];
-  $styles['netflix'] = [
-    'positions' => ['right', 'left'],
+  $styles['plain'] = array();
+  $styles['netflix'] = array(
+    'positions' => array('right', 'left'),
     'fill' => '#FFF',
     'padding' => 5,
     'shadow' => TRUE,
     'shadowBlur' => 12,
     'strokeStyle' => '#B9090B',
     'spikeLength' => 50,
-    'spikeGirth' => 60,
+    'spikeGirth' => 20,
     'cornerRadius' => 10,
     'centerPointY' => .1,
     'overlap' => -8,
-    'cssStyles' => [
+    'cssStyles' => array(
       'fontSize' => '12px',
       'fontFamily' => 'arial,helvetica,sans-serif',
-    ],
-  ];
-  $styles['facebook'] = [
+    ),
+  );
+  $styles['facebook'] = array(
     'fill' => '#F7F7F7',
     'padding' => 8,
     'strokeStyle' => '#B7B7B7',
     'cornerRadius' => 0,
-    'cssStyles' => [
+    'cssStyles' => array(
       'fontFamily' => '"lucida grande",tahoma,verdana,arial,sans-serif',
       'fontSize' => '11px',
-    ],
-  ];
-  $styles['transparent'] = [
+    ),
+  );
+  $styles['transparent'] = array(
     'fill' => 'rgba(0, 0, 0, .8)',
     'padding' => 20,
     'strokeStyle' => '#CC0',
@@ -234,25 +234,25 @@ function beautytips_define_beautytips_styles() {
     'spikeLength' => 40,
     'spikeGirth' => 40,
     'cornerRadius' => 40,
-    'cssStyles' => [
+    'cssStyles' => array(
       'color' => '#FFF',
       'fontWeight' => 'bold',
-    ],
-  ];
-  $styles['big-green'] = [
+    ),
+  );
+  $styles['big-green'] = array(
     'fill' => '#00FF4E',
     'padding' => 20,
     'strokeWidth' => 0,
     'spikeLength' => 40,
     'spikeGirth' => 40,
     'cornerRadius' => 15,
-    'cssStyles' => [
+    'cssStyles' => array(
       'fontFamily' => '"lucida grande",tahoma,verdana,arial,sans-serif',
       'fontSize' => '14px',
-    ],
-  ];
-  $styles['google-maps'] = [
-    'positions' => ['top', 'bottom'],
+    ),
+  );
+  $styles['google-maps'] = array(
+    'positions' => array('top', 'bottom'),
     'fill' => '#FFF',
     'padding' => 15,
     'strokeStyle' => '#ABABAB',
@@ -261,9 +261,12 @@ function beautytips_define_beautytips_styles() {
     'spikeGirth' => 40,
     'cornerRadius' => 25,
     'centerPointX' => .9,
-    'cssStyles' => [],
-  ];
-  $styles['hulu'] = [
+    'cssStyles' => array(
+      'fontSize' => '12px',
+      'fontFamily' => 'arial,helvetica,sans-serif',
+    ),
+  );
+  $styles['hulu'] = array(
     'fill' => '#F4F4F4',
     'strokeStyle' => '#666666',
     'spikeLength' => 20,
@@ -272,16 +275,29 @@ function beautytips_define_beautytips_styles() {
     'overlap' => 0,
     'centerPointY' => 1,
     'cornerRadius' => 0,
-    'cssStyles' => [
+    'cssStyles' => array(
       'fontFamily' => '"Lucida Grande",Helvetica,Arial,Verdana,sans-serif',
       'fontSize' => '12px',
       'padding' => '10px 14px',
-    ],
+    ),
     'shadow' => TRUE,
     'shadowColor' => 'rgba(0,0,0,.5)',
     'shadowBlur' => 8,
     'shadowOffsetX' => 4,
     'shadowOffsetY' => 4,
-  ];
+  );
   return $styles;
 }
+
+/**
+ * Implements hook_config_info().
+ */
+function beautytips_config_info()
+{
+  $prefixes['beautytips.settings'] = array(
+    'label' => t('BeautyTips'),
+    'group' => t('Configuration'),
+  );
+  return $prefixes;
+}
+

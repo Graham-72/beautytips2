@@ -1,7 +1,7 @@
 /**
  * jQuery to show on beautytips admin settings page
  */
-Drupal.behaviors.beautytipsAdmin = {
+Backdrop.behaviors.beautytipsAdmin = {
   attach: function (context, settings) {
     if (!jQuery("#edit-beautytips-always-add").attr("checked")) {
       // Disable input and hide its description.
@@ -52,7 +52,7 @@ Drupal.behaviors.beautytipsAdmin = {
         var optionName = name.replace("bt-options-box-", "");
         var newValue = jQuery(this).find('input').val();
         if (optionName == 'shadow') {
-          newValue = jQuery(".beautytips-options-shadow input[@name='bt-options-box-shadow']:checked").val();
+          newValue = jQuery(".beautytips-options-shadow input[name='bt-options-box-shadow']:checked").val();
           newValue = newValue == 'default' ? null : (newValue == 'shadow' ? true : false);
         }
         if (newValue || newValue === false) {
@@ -100,6 +100,6 @@ function beautytipsSetupDefaultOptions(themeSettings) {
 }
 
 function beautytipsGetThemeSettings() {
-  themeSettings = Drupal.settings.beautytips;
+  themeSettings = Backdrop.settings.beautytips;
   return themeSettings;
 }

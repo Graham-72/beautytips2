@@ -9,9 +9,9 @@
  * Listing of all beautytips available.
  */
 function beautytips_manager_tips_manager_page() {
-  $rows = [];
+  $rows = array();
   $empty = '';
-  $header = [
+  $header = array(
     t('Element'),
     t('Style'),
     t('Status'),
@@ -19,13 +19,13 @@ function beautytips_manager_tips_manager_page() {
     t('Pages'),
     t('operations'),
     '',
-  ];
+  );
   $tips = beautytips_manager_get_custom_tips();
   if (count($tips)) {
-    $visibility = [
+    $visibility = array(
       t('Show on every page except the listed pages.'),
       t('Show on only the listed pages.'),
-    ];
+    );
     foreach ($tips as $tip) {
       $tip->pages = check_plain($tip->pages);
       $pages = ($tip->pages != substr($tip->pages, 0, 40)) ? substr($tip->pages, 0, 40) . '...' : substr($tip->pages, 0, 40);
@@ -34,96 +34,96 @@ function beautytips_manager_tips_manager_page() {
       $rows[$tip->id]['enabled'] = $tip->enabled ? t('Enabled') : t('Disabled');
       $rows[$tip->id]['visibility'] = $visibility[$tip->visibility];
       $rows[$tip->id]['pages'] = $pages;
-      $rows[$tip->id]['edit'] = l(t('edit'), "admin/config/user-interface/beautytips/custom-tips/$tip->id/edit");
-      $rows[$tip->id]['delete'] = l(t('delete'), "admin/config/user-interface/beautytips/custom-tips/$tip->id/delete");
+      $rows[$tip->id]['edit'] = l(t('edit'), "admin/config/content/beautytips/custom-tips/$tip->id/edit");
+      $rows[$tip->id]['delete'] = l(t('delete'), "admin/config/content/beautytips/custom-tips/$tip->id/delete");
     }
   }
   else {
     $empty = t('There are no custom beautytips yet.');
   }
-  return theme('table', ['header' => $header, 'rows' => $rows]) . $empty;
+  return theme('table', array('header' => $header, 'rows' => $rows)) . $empty;
 }
 
 /**
  * Page callback for custom styles administration.
  */
 function beautytips_manager_styles_manager_page() {
-  $rows = [];
+  $rows = array();
   $empty = '';
-  $header = [t('Name'), t('operations'), ''];
+  $header = array(t('Name'), t('operations'), '');
   $styles = beautytips_manager_get_custom_styles();
   if (count($styles)) {
-    $visibility = [
+    $visibility = array(
       t('Show on every page except the listed pages.'),
       t('Show on only the listed pages.'),
-    ];
+    );
     foreach ($styles as $style) {
       $name = check_plain($style->name);
       unset($style->name);
       $rows[$style->id]['name'] = '<span class="bt-style-' . $name . '">' . $name . '</span>';
-      $rows[$style->id]['edit'] = l(t('edit'), "admin/config/user-interface/beautytips/custom-styles/$style->id/edit");
-      if ($name != variable_get('beautytips_default_style', 'plain')) {
-        $rows[$style->id]['delete'] = l(t('delete'), "admin/config/user-interface/beautytips/custom-styles/$style->id/delete");
+      $rows[$style->id]['edit'] = l(t('edit'), "admin/config/content/beautytips/custom-styles/$style->id/edit");
+      if ($name != config_get('beautytips.settings','beautytips_default_style')) {
+        $rows[$style->id]['delete'] = l(t('delete'), "admin/config/content/beautytips/custom-styles/$style->id/delete");
       }
       else {
         $rows[$style->id]['delete'] = t('Default style');
       }
 
-      $options = [
+      $options = array(
         'cssSelect' => 'td .bt-style-' . $name,
         'text' => t('<h2>Default Text</h2><p>Nam magna enim, accumsan eu, blandit sed, blandit a, eros.  Nam ante nulla, interdum vel, tristique ac, condimentum non, tellus.</p><p>Nulla facilisi. Nam magna enim, accumsan eu, blandit sed, blandit a, eros.</p>'),
         'trigger' => 'hover',
         'style' => $name,
         //'shrinkToFit' => TRUE,
-      ];
-      beautytips_add_beautytips([$name => $options]);
+      );
+      beautytips_add_beautytips(array($name => $options));
     }
   }
   else {
     $empty = t('There are no custom beautytip styles yet.');
   }
-  return theme('table', ['header' => $header, 'rows' => $rows]) . $empty;
+  return theme('table', array('header' => $header, 'rows' => $rows)) . $empty;
 }
 
 /**
  * Form for configuring custom beautytips.
  */
 function beautytips_manager_custom_tips_form($form, &$form_state, $id = NULL) {
-  drupal_add_css(drupal_get_path('module', 'beautytips') . '/css/beautytips.css');
+  backdrop_add_css(backdrop_get_path('module', 'beautytips') . '/css/beautytips.css');
   $tip = beautytips_manager_get_custom_tip($id);
   if (!isset($tip->id)) {
     $tip = NULL;
   }
 
-  $form = [];
-  $form['tip'] = [
+  $form = array();
+  $form['tip'] = array(
     '#type' => 'markup',
     '#value' => '',
     '#tree' => TRUE,
-  ];
-  $form['tip']['id'] = [
+  );
+  $form['tip']['id'] = array(
     '#type' => 'value',
     '#value' => is_object($tip) ? $tip->id : 0,
-  ];
-  $form['tip']['element'] = [
+  );
+  $form['tip']['element'] = array(
     '#type' => 'textfield',
     '#title' => t('Element'),
     '#required' => TRUE,
     '#maxlength' => 255,
     '#default_value' => is_object($tip) ? $tip->element : '',
-  ];
-  $form['tip']['enabled'] = [
+  );
+  $form['tip']['enabled'] = array(
     '#type' => 'checkbox',
     '#title' => t('Enabled'),
     '#default_value' => is_object($tip) ? $tip->enabled : TRUE,
-  ];
-  $content_options = [
+  );
+  $content_options = array(
     'attribute' => 'attribute',
     'text' => 'text',
     'ajax' => 'ajax',
-  ];
+  );
   $description = t('Content to display in the beautytip.  The data entered here depends on the Content Type.');
-  $types = [];
+  $types = array();
   $types[0] = t('attribute - Enter the attribute of the element that should be displayed. (If empty, the title will be selected.)');
   $types[0] .= '<br />' . t('ex. "alt"');
   $types[1] = t('text - Enter the text that should be displayed with in the beautytip.');
@@ -135,70 +135,70 @@ function beautytips_manager_custom_tips_form($form, &$form_state, $id = NULL) {
     $types[3] = 'js - Directly enter javascript to select the content.';
     $types[3] .= '<br />' . t('ex. "$(this).next(\'.description\').html()"');
   }
-  $form['tip']['content_type'] = [
+  $form['tip']['content_type'] = array(
     '#type' => 'radios',
     '#title' => t('Type of Content'),
     '#description' => t('This helps determine from where to pull the content to be displayed.'),
     '#options' => $content_options,
     '#default_value' => is_object($tip) ? $tip->content_type : 0,
-  ];
-  $form['tip']['content'] = [
+  );
+  $form['tip']['content'] = array(
     '#type' => 'textarea',
     '#title' => t('Content to Display'),
-    '#description' => theme('item_list', ['items' => $types]),
+    '#description' => theme('item_list', array('items' => $types)),
     '#default_value' => is_object($tip) ? $tip->content : '',
-  ];
+  );
   $triggers = beautytips_manager_get_triggers();
-  $form['tip']['trigger_on'] = [
+  $form['tip']['trigger_on'] = array(
     '#type' => 'select',
     '#title' => t('Trigger On'),
-    '#description' => t('Not all events are available for all elements. See jQuery <a href="@events">events documentation</a> for details.', ['@events' => 'http://docs.jquery.com/Events']),
+    '#description' => t('Not all events are available for all elements. See jQuery <a href="@events">events documentation</a> for details.', array('@events' => 'http://docs.jquery.com/Events')),
     '#options' => $triggers,
     '#default_value' => is_object($tip) ? $tip->trigger_on : 0,
     '#prefix' => '<div class="beautytips-triggers">',
-  ];
-  $form['tip']['trigger_off'] = [
+  );
+  $form['tip']['trigger_off'] = array(
     '#type' => 'select',
     '#title' => t('Trigger Off'),
     '#options' => $triggers,
     '#suffix' => '</div>',
     '#default_value' => is_object($tip) ? $tip->trigger_off : 0,
-  ];
+  );
 
-  $form['tip']['disable_link'] = [
+  $form['tip']['disable_link'] = array(
     '#type' => 'checkbox',
     '#title' => t('Disable Link Click'),
     '#description' => t('If you have chosen ajax as the type of content, and you would like to prevent the link from working, then check this box.'),
     '#default_value' => is_object($tip) ? $tip->disable_link : 0,
-  ];
+  );
 
   $styles = beautytips_get_styles();
   foreach ($styles as $key => $style) {
     $style_options[$key] = $key;
   }
-  $form['tip']['style'] = [
+  $form['tip']['style'] = array(
     '#type' => 'select',
     '#title' => t('Style'),
     '#options' => $style_options,
     '#default_value' => is_object($tip) ? $tip->style : 'default',
-  ];
-  $form['tip']['shrink'] = [
+  );
+  $form['tip']['shrink'] = array(
     '#type' => 'checkbox',
     '#title' => t('Shrink to Fit'),
     '#description' => t('Shrink the beautytip to the size of the content. This can sometimes help with sizing problems and is good for tips with just one line.'),
     '#default_value' => is_object($tip) ? $tip->shrink : FALSE,
-  ];
+  );
 
-  $positions = is_object($tip) ? explode(',', $tip->positions) : [];
-  $form['tip']['positions'] = [
+  $positions = is_object($tip) ? explode(',', $tip->positions) : array();
+  $form['tip']['positions'] = array(
     '#type' => 'fieldset',
     '#title' => t('Positions'),
     '#description' => t("Optionally enter the order of positions in which you want the tip to appear.  It will use first in order with available space. The last value will be used if others don't have enough space. If no entries, then the tip will be placed in the area with the most space. Only enter an order for those you wish to use"),
     '#tree' => TRUE,
-  ];
-  $positions_list = ['top', 'bottom', 'left', 'right'];
+  );
+  $positions_list = array('top', 'bottom', 'left', 'right');
   foreach ($positions_list as $position) {
-    $form['tip']['positions'][$position] = [
+    $form['tip']['positions'][$position] = array(
       '#type' => 'textfield',
       '#title' => t($position),
       '#default_value' => (array_search($position, $positions) !== FALSE) ? array_search($position, $positions) : '',
@@ -206,62 +206,62 @@ function beautytips_manager_custom_tips_form($form, &$form_state, $id = NULL) {
       '#maxlength' => 1,
       '#prefix' => '<div class="beautytips-positions">',
       '#suffix' => '</div>',
-    ];
+    );
   }
 
-  $form['tip']['animation_on'] = [
+  $form['tip']['animation_on'] = array(
     '#type' => 'select',
     '#title' => t('Animation (On)'),
-    '#options' => ['' => '<none>', 'fadeIn' => 'fadeIn'],
+    '#options' => array('' => '<none>', 'fadeIn' => 'fadeIn'),
     '#description' => t("These animations will be applied to the tip when it is turn on or off."),
     '#default_value' => is_object($tip) ? $tip->animation_on : '',
     '#prefix' => '<div class="beautytips-animations">',
-  ];
-  $form['tip']['animation_off'] = [
+  );
+  $form['tip']['animation_off'] = array(
     '#type' => 'select',
     '#title' => t('Animation (Off)'),
-    '#options' => [
+    '#options' => array(
       '' => '<none>',
       'fadeOut' => 'fadeOut',
       'slideOut' => 'slideOut',
-    ],
+    ),
     '#default_value' => is_object($tip) ? $tip->animation_off : '',
     '#suffix' => '</div>',
-  ];
+  );
 
-  $options = [
+  $options = array(
     t('Show on every page except the listed pages.'),
     t('Show on only the listed pages.'),
-  ];
-  $description = t("Enter one page per line as Drupal paths. The '*' character is a wildcard. Example paths are %blog for the blog page and %blog-wildcard for every personal blog. %front is the front page.", [
+  );
+  $description = t("Enter one page per line as Backdrop paths. The '*' character is a wildcard. Example paths are %blog for the blog page and %blog-wildcard for every personal blog. %front is the front page.", array(
     '%blog' => 'blog',
     '%blog-wildcard' => 'blog/*',
     '%front' => '<front>',
-  ]);
+  ));
 
-  $form['tip']['visibility'] = [
+  $form['tip']['visibility'] = array(
     '#type' => 'radios',
     '#title' => t('Show beautytip on specific pages'),
     '#options' => $options,
     '#default_value' => is_object($tip) ? $tip->visibility : 0,
     '#prefix' => '<div id="edit-tip-visibility-wrapper">',
     '#suffix' => '</div>',
-  ];
-  $form['tip']['pages'] = [
+  );
+  $form['tip']['pages'] = array(
     '#type' => 'textarea',
     '#title' => t('Pages'),
     '#default_value' => is_object($tip) ? $tip->pages : '',
     '#description' => $description,
-  ];
+  );
 
-  $form['save'] = [
+  $form['save'] = array(
     '#type' => 'submit',
     '#value' => t('Save configuration'),
-  ];
-  $form['delete'] = [
+  );
+  $form['delete'] = array(
     '#type' => 'submit',
     '#value' => t('Delete'),
-  ];
+  );
 
   $form['#submit'][] = 'beautytips_manager_custom_tips_form_submit';
   return $form;
@@ -285,7 +285,7 @@ function beautytips_manager_custom_tips_form_validate($form, &$form_state) {
  */
 function beautytips_manager_custom_tips_form_submit($form, &$form_state) {
   $tip = $form_state['values']['tip'];
-  $positions = [];
+  $positions = array();
   foreach ($tip['positions'] as $position => $order) {
     if ($order !== '') {
       while (isset($positions[$order])) {
@@ -299,7 +299,7 @@ function beautytips_manager_custom_tips_form_submit($form, &$form_state) {
 
   beautytips_manager_save_custom_tip($tip);
   cache_clear_all('beautytips:beautytips-ui-custom-tips', 'cache');
-  $form_state['redirect'] = 'admin/config/user-interface/beautytips/custom-tips';
+  $form_state['redirect'] = 'admin/config/content/beautytips/custom-tips';
 }
 
 /**
@@ -314,19 +314,19 @@ function beautytips_manager_custom_styles_form($form, &$form_state, $id = NULL) 
     $css_style_options = $style_map['css_options'];
   }
 
-  $form = [];
-  $form['name'] = [
+  $form = array();
+  $form['name'] = array(
     '#type' => 'textfield',
     '#title' => t('Style Name'),
     '#description' => t('It must contain only alphanumeric characters and underscores.'),
     '#default_value' => isset($style->name) ? $style->name : '',
-  ];
-  $form['style'] = [
+  );
+  $form['style'] = array(
     '#type' => 'value',
     '#value' => isset($style) ? $style : NULL,
-  ];
+  );
   // TODO: Add this into mapping
-  $style_info = [
+  $style_info = array(
     'fill' => t('background color (string - html color)'),
     'strokeWidth' => t('width of border (integer)'),
     'strokeStyle' => t('color of border (string - html color)'),
@@ -337,66 +337,66 @@ function beautytips_manager_custom_styles_form($form, &$form_state, $id = NULL) 
     'spikeLength' => t('length of spike (integer)'),
     'shadowBlur' => t('Size of popup shadow (integer)'),
     'shadowColor' => t('Color of popup shadow (string - html color)'),
-  ];
-  $form['custom_styles'] = [
+  );
+  $form['custom_styles'] = array(
     '#type' => 'fieldset',
     '#title' => t('Custom Style Options'),
     '#description' => t('<div id="beautytips-popup-changes"><div id="beauty-click-text"><p></p></div></div>'),
-    '#attributes' => ['class' => ['bt-custom-styles']],
+    '#attributes' => array('class' => array('bt-custom-styles')),
     '#tree' => TRUE,
-  ];
+  );
   foreach ($style_info as $option => $description) {
-    $form['custom_styles'][$option] = [
+    $form['custom_styles'][$option] = array(
       '#title' => $option,
       '#description' => $description,
       '#type' => 'textfield',
       '#default_value' => (isset($style_options) && isset($style->{$style_options[$option]}) && !is_null($style->{$style_options[$option]})) ? $style->{$style_options[$option]} : '',
-    ];
+    );
   }
-  $form['custom_styles']['shadow'] = [
+  $form['custom_styles']['shadow'] = array(
     '#title' => 'shadow',
     '#description' => t('Whether or not the popup has a shadow'),
     '#type' => 'radios',
-    '#options' => [
+    '#options' => array(
       'default' => t('Default'),
       'shadow' => t('Shadow On'),
       'no_shadow' => t('Shadow Off'),
-    ],
-    '#attributes' => ['class' => ['beautytips-options-shadow']],
+    ),
+    '#attributes' => array('class' => array('beautytips-options-shadow')),
     '#default_value' => isset($style->shadow) ? $style->shadow : 'default',
-  ];
-  $form['custom_styles']['cssClass'] = [
+  );
+  $form['custom_styles']['cssClass'] = array(
     '#title' => 'cssClass',
     '#description' => t('The class that will be applied to the box wrapper div (of the TIP)'),
     '#type' => 'textfield',
     '#default_value' => isset($style->css_class) ? $style->css_class : '',
-  ];
-  $css_style_info = ['color', 'fontFamily', 'fontWeight', 'fontSize'];
-  $form['custom_styles']['css-styles'] = [
+  );
+  $css_style_info = array('color', 'fontFamily', 'fontWeight', 'fontSize');
+  $form['custom_styles']['css-styles'] = array(
     '#type' => 'fieldset',
     '#title' => t('Font Styling'),
     '#description' => t('Enter css options for changing the font style'),
-    '#attributes' => ['class' => ['beautytips-css-styling']],
+    '#attributes' => array('class' => array('beautytips-css-styling')),
     '#collapsible' => FALSE,
-  ];
+  );
   foreach ($css_style_info as $option) {
-    $form['custom_styles']['css-styles'][$option] = [
+    $form['custom_styles']['css-styles'][$option] = array(
       '#title' => $option,
       '#type' => 'textfield',
       '#default_value' => (isset($css_style_options) && isset($style->{$css_style_options[$option]}) && !is_null($style->{$css_style_options[$option]})) ? $style->{$css_style_options[$option]} : '',
-    ];
+    );
   }
 
-  $path = drupal_get_path('module', 'beautytips');
+  $path = backdrop_get_path('module', 'beautytips');
   // TODO: This could be in a library
-  drupal_add_js($path . '/other_libs/colorpicker/js/colorpicker.js');
-  drupal_add_css($path . '/other_libs/colorpicker/css/colorpicker.css');
+  backdrop_add_js($path . '/other_libs/colorpicker/js/colorpicker.js');
+  backdrop_add_css($path . '/other_libs/colorpicker/css/colorpicker.css');
   beautytips_add_beautytips();
-  drupal_add_js($path . '/js/bt_custom_styles.js');
-  $form['save'] = [
+  backdrop_add_js($path . '/js/bt_custom_styles.js');
+  $form['save'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
-  ];
+  );
   return $form;
 }
 
@@ -412,18 +412,18 @@ function beautytips_manager_custom_styles_form_validate($form, &$form_state) {
     form_set_error('name', t('Style name must be alphanumeric or underscores only.'));
   }
 
-  $integer_fields = [
+  $integer_fields = array(
     'strokeWidth' => 'style',
     'cornerRadius' => 'style',
     'spikeGirth' => 'style',
     'spikeLength' => 'style',
     'shadowBlur' => 'style',
-  ];
-  $pixel_fields = [
+  );
+  $pixel_fields = array(
     'width' => 'style',
     'padding' => 'style',
     'fontSize' => 'css',
-  ];
+  );
 
   // Validate fields that expect a number
   foreach ($integer_fields as $name => $type) {
@@ -431,7 +431,7 @@ function beautytips_manager_custom_styles_form_validate($form, &$form_state) {
     if ($value) {
       if (!ctype_digit($value)) {
         $error_element = $type == 'css' ? 'custom_styles][css-styles][' . $name : 'custom_styles][' . $name;
-        form_set_error($error_element, t('You need to enter an integer value for <em>@name</em>', ['@name' => $name]));
+        form_set_error($error_element, t('You need to enter an integer value for <em>@name</em>', array('@name' => $name)));
       }
     }
   }
@@ -441,13 +441,10 @@ function beautytips_manager_custom_styles_form_validate($form, &$form_state) {
     $value = $type == 'css' ? $values['custom_styles']['css-styles'][$name] : $values['custom_styles'][$name];
     if ($value) {
       $unit = substr($value, -2, 2);
-      $value = str_replace(['px', ' ', 'em'], '', $value);
-      if (!is_numeric($value) || (!$value && $value != 0) || !in_array($unit, [
-          'px',
-          'em',
-        ])) {
+      $value = str_replace(array('px', ' ', 'em'), '', $value);
+      if (!is_numeric($value) || (!$value && $value != 0) || !in_array($unit, array('px', 'em'))) {
         $error_element = $type == 'css' ? 'custom_styles][css-styles][' . $name : 'custom_styles][' . $name;
-        form_set_error($error_element, t('You need to enter a numeric value for <em>@name</em>, followed by <em>px</em> or <em>em</em>', ['@name' => $name]));
+        form_set_error($error_element, t('You need to enter a numeric value for <em>@name</em>, followed by <em>px</em> or <em>em</em>', array('@name' => $name)));
       }
     }
   }
@@ -483,7 +480,7 @@ function beautytips_manager_custom_styles_form_submit($form, &$form_state) {
   }
   beautytips_manager_save_custom_style($style);
   cache_clear_all('beautytips:beautytips-styles', 'cache');
-  $form_state['redirect'] = 'admin/config/user-interface/beautytips/custom-styles';
+  $form_state['redirect'] = 'admin/config/content/beautytips/custom-styles';
 }
 
 /**
@@ -491,12 +488,12 @@ function beautytips_manager_custom_styles_form_submit($form, &$form_state) {
  */
 function beautytips_manager_delete_tip_confirm_form($form, &$form_state, $id) {
   $tip = beautytips_manager_get_custom_tip($id);
-  $form['id'] = [
+  $form['id'] = array(
     '#type' => 'value',
     '#value' => $id,
-  ];
-  $question = t('Are you sure you want to the beautytip applied to element %element?', ['%element' => $tip->element]);
-  return confirm_form($form, $question, 'admin/config/user-interface/beautytips/custom-tips');
+  );
+  $question = t('Are you sure you want to the beautytip applied to element %element?', array('%element' => $tip->element));
+  return confirm_form($form, $question, 'admin/config/content/beautytips/custom-tips');
 }
 
 /**
@@ -505,7 +502,7 @@ function beautytips_manager_delete_tip_confirm_form($form, &$form_state, $id) {
 function beautytips_manager_delete_tip_confirm_form_submit($form, &$form_state) {
   beautytips_manager_delete_custom_tip($form_state['values']['id']);
   cache_clear_all('beautytips:beautytips-ui-custom-tips', 'cache');
-  $form_state['redirect'] = 'admin/config/user-interface/beautytips/custom-tips';
+  $form_state['redirect'] = 'admin/config/content/beautytips/custom-tips';
 }
 
 /**
@@ -513,11 +510,11 @@ function beautytips_manager_delete_tip_confirm_form_submit($form, &$form_state) 
  */
 function beautytips_manager_delete_style_page($id) {
   $style = beautytips_manager_get_custom_style($id);
-  if ($style->name == variable_get('beautytips_default_style', 'plain')) {
-    return t('You cannot delete this style because is set as the default style.  You may change this <a href="@link">here</a>.', ['@link' => '/admin/config/user-interface/beautytips']);
+  if ($style->name == config_get('beautytips.settings','beautytips_default_style')) {
+    return t('You cannot delete this style because is set as the default style.  You may change this <a href="@link">here</a>.', array('@link' => '/admin/config/content/beautytips'));
   }
 
-  return drupal_get_form('beautytips_manager_delete_style_confirm_form', $id);
+  return backdrop_get_form('beautytips_manager_delete_style_confirm_form', $id);
 
 }
 
@@ -526,12 +523,12 @@ function beautytips_manager_delete_style_page($id) {
  */
 function beautytips_manager_delete_style_confirm_form($form, &$form_state, $id) {
   $style = beautytips_manager_get_custom_style($id);
-  $form['id'] = [
+  $form['id'] = array(
     '#type' => 'value',
     '#value' => $id,
-  ];
-  $question = t('Are you sure you want to the beautytip stlye %style?', ['%style' => $style->name]);
-  return confirm_form($form, $question, 'admin/config/user-interface/beautytips/custom-styles');
+  );
+  $question = t('Are you sure you want to the beautytip stlye %style?', array('%style' => $style->name));
+  return confirm_form($form, $question, 'admin/config/content/beautytips/custom-styles');
 }
 
 /**
@@ -539,5 +536,5 @@ function beautytips_manager_delete_style_confirm_form($form, &$form_state, $id) 
  */
 function beautytips_manager_delete_style_confirm_form_submit($form, &$form_state) {
   beautytips_manager_delete_custom_style($form_state['values']['id']);
-  $form_state['redirect'] = 'admin/config/user-interface/beautytips/custom-styles';
+  $form_state['redirect'] = 'admin/config/content/beautytips/custom-styles';
 }
