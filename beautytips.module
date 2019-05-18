@@ -13,7 +13,7 @@ function beautytips_init() {
     $selectors = array();
     $options = array();
     $selectors = config_get('beautytips.settings','beautytips_added_selectors_array');
-    if (count($selectors)) {
+    if (!empty($selectors)) {
       foreach ($selectors as $selector) {
         if (!empty($selector)) {
           $options[$selector]['cssSelect'] = $selector;
@@ -91,7 +91,7 @@ function beautytips_library_info() {
 function beautytips_add_beautytips($options = NULL) {
   $settings = array('beautytips' => array());
   $js_added = backdrop_add_js($data = NULL, 'setting');
-  if (count($options)) {
+  if (!empty($options)) {
     foreach ($options as $beautytip => $content) {
       // Ensure the js settings are not added more than once
       if (isset($js_added['settings']['data']) && is_array($js_added['settings']['data'])) {
@@ -184,13 +184,13 @@ function beautytips_get_style($style = 'default') {
 function beautytips_define_beautytips_styles() {
   $styles['default'] = config_get('beautytips.settings','beautytips_defaults');
   // Cleanup any problems with defaults.
-  if (count($styles['default'])) {
+  if (!empty($styles['default'])) {
     foreach ($styles['default'] as &$value) {
       if (!is_array($value)) {
         $value = (ctype_digit($value) || is_int($value)) ? (int) $value : check_plain($value);
       }
       else {
-        if (count($value)) {
+        if (!empty($value)) {
           foreach ($value as &$sub_value) {
             $sub_value = check_plain($sub_value);
           }
