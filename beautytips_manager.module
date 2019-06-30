@@ -80,7 +80,7 @@ function beautytips_manager_menu() {
 function beautytips_manager_init() {
   $options = array();
   $tips = beautytips_manager_get_custom_tips();
-  if (count($tips)) {
+  if (!empty($tips)) {
     foreach ($tips as $tip) {
       if (!$tip->enabled) {
         continue;
@@ -111,7 +111,7 @@ function beautytips_manager_init() {
       }
     }
   }
-  if (count($options)) {
+  if (!empty($options)) {
     beautytips_add_beautytips($options);
   }
 }
@@ -340,7 +340,7 @@ function beautytips_manager_define_beautytips_styles() {
   $style_options = array_flip($style_map['options']);
   $css_style_options = array_flip($style_map['css_options']);
 
-  if (count($custom_styles)) {
+  if (!empty($custom_styles)) {
     foreach ($custom_styles as $id => $style) {
       $options = array();
       foreach ($style as $key => $value) {

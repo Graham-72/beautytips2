@@ -12,9 +12,9 @@ function beautytips_ui_admin_settings(&$form) {
   $items = beautytips_ui_include_invoke('beautytips', 'admin_info', $args = array());
   if (is_array($items)) {
     foreach ($items as $form_item) {
-      if (count($form_item)) {
+      if (!empty($form_item)) {
         $keys = array_keys($form_item);
-        if (count($keys)) {
+        if (!empty($keys)) {
           foreach ($keys as $menu_item) {
             $form[$menu_item] = $form_item[$menu_item];
           }
