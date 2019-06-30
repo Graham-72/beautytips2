@@ -38,7 +38,7 @@ function beautytips_admin() {
     '#collapsed' => FALSE,
   );
   $styles = beautytips_get_styles(TRUE);
-  if (count($styles)) {
+  if (!empty($styles)) {
     unset($styles['default']);
     foreach ($styles as $name => $style) {
       $bt_style_options[$name]['cssSelect'] = '#edit-beautytips-default-style-' . str_replace('_', '-', $name);
@@ -214,7 +214,7 @@ function beautytips_admin_validate($form, &$form_state) {
  */
 function beautytips_admin_submit($form, &$form_state) {
   $values = $form_state['values'];
-  if (count($values)) {
+  if (!empty($values)) {
     $custom_style = array();
     $css_style = array();
     foreach ($values as $option => $value) {
@@ -240,7 +240,7 @@ function beautytips_admin_submit($form, &$form_state) {
 
     // Store the defaults - they will be passed to javascript
     $style = beautytips_get_style($values['beautytips_default_style']);
-    if (count($custom_style)) {
+    if (!empty($custom_style)) {
       foreach ($custom_style as $option => $value) {
         if ($option == 'shadow') {
           if ($value != 'default') {
@@ -254,7 +254,7 @@ function beautytips_admin_submit($form, &$form_state) {
         }
       }
     }
-    if (count($css_style)) {
+    if (!empty($css_style)) {
       foreach ($css_style as $option => $value) {
         if (!empty($value)) {
           $style['cssStyles'][$option] = (string) $value;
@@ -274,7 +274,7 @@ function beautytips_admin_submit($form, &$form_state) {
     // Store array of selectors that bt will be added to on every page
     $selectors = explode(",", $values['beautytips_added_selectors_string']);
     $test = serialize($selectors);
-    if (count($selectors)) {
+    if (!empty($selectors)) {
       foreach ($selectors as $key => $selector) {
         $selectors[$key] = trim($selector);
       }

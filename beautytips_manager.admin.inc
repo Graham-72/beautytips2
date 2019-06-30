@@ -21,7 +21,7 @@ function beautytips_manager_tips_manager_page() {
     '',
   );
   $tips = beautytips_manager_get_custom_tips();
-  if (count($tips)) {
+  if (!empty($tips)) {
     $visibility = array(
       t('Show on every page except the listed pages.'),
       t('Show on only the listed pages.'),
@@ -52,7 +52,7 @@ function beautytips_manager_styles_manager_page() {
   $empty = '';
   $header = array(t('Name'), t('operations'), '');
   $styles = beautytips_manager_get_custom_styles();
-  if (count($styles)) {
+  if (!empty($styles)) {
     $visibility = array(
       t('Show on every page except the listed pages.'),
       t('Show on only the listed pages.'),
@@ -295,7 +295,7 @@ function beautytips_manager_custom_tips_form_submit($form, &$form_state) {
     }
   }
   ksort($positions);
-  $tip['positions'] = (count($positions)) ? implode(',', $positions) : '';
+  $tip['positions'] = (!empty($positions)) ? implode(',', $positions) : '';
 
   beautytips_manager_save_custom_tip($tip);
   cache_clear_all('beautytips:beautytips-ui-custom-tips', 'cache');
