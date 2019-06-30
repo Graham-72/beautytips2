@@ -280,6 +280,9 @@ function beautytips_admin_submit($form, &$form_state) {
       }
     }
     config_set('beautytips.settings','beautytips_added_selectors_array', $selectors);
+    config_set('beautytips.settings','beautytips_text_input', $values['beautytips_text_input']);
+    config_set('beautytips.settings','beautytips_position', $values['beautytips_position']);
+    config_set('beautytips.settings','beautytips_backdrop_help', $values['beautytips_backdrop_help']);
   }
   if (module_exists('beautytips_ui')) {
     beautytips_ui_admin_submit($form, $form_state);
